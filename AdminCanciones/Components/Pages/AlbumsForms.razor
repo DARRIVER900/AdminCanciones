@@ -1,0 +1,81 @@
+﻿@page "/albums/nueva"
+@page "/albums/editar/{id:int}"
+@inject NavigationManager _navigationManager
+@inject IRepositorioAlbums _repositorioAlbum
+@inject IRepositorioArtistas _repositorioArtista
+@rendermode InteractiveServer
+
+<PageTitle>Albums</PageTitle>
+<h3>@_mensaje Albums</h3>
+
+<EditForm Model="_album" FormName="frmAlbum" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label for="txtTitulo" class="form-label">Titulo</label>
+        <InputText @bind-Value="_album.Titulo" class="form-control" id="txtTitulo" />
+        <ValidationMessage For="() =>_album.Titulo" />
+    </div>
+    <div class="mb-3">
+        <label for="txtAño" class="form-label">Año</label>
+        <InputText @bind-Value="_album.Año" class="form-control" id="txtAño" />
+        <ValidationMessage For="() =>_album.Año" />
+    </div>
+
+            <div class="mb-3 row">
+        <label for="txtArtista" class="col-sm-2 col-form-label">Artista</label>
+        <div class="col-sm-10">
+            <InputSelect class="form-select" id="txtArtista" @bind-Value="_album.ArtistaId">
+                <option value="">Seleccione...</option>
+                @foreach (var artista in _artistas)
+                {
+                    <option value="@artista.Id">@artista.Nombre</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="()=>_album.ArtistaId" />
+        </div>
+
+</div>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <button class="btn btn-secondary ms-2" @onclick="Cancelar">Cancelar</button>
+</EditForm>
+
+
+@code {
+
+    [Parameter]
+    public int id { get; set; }
+    private Album _album = new();
+    private string _mensaje = "Nueva";
+    private List<Artista> _artistas = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _artistas = await _repositorioArtista.GetAll();
+        if (id > 0)
+        {
+            _mensaje = "Modificar ";
+            _album = await _repositorioAlbum.Get(id);
+        }
+    }
+
+    private void Cancelar()
+    {
+        _navigationManager.NavigateTo("/albums");
+    }
+    private async Task Guardar()
+    {
+        if (id > 0)
+        {
+            _album.Id = id;
+            await _repositorioAlbum.Update(_album);
+        }
+        else
+        {
+            await _repositorioAlbum.Add(_album);
+        }
+        Cancelar();
+    }
+
+}

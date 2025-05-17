@@ -1,0 +1,63 @@
+﻿@page "/artistas/nueva"
+@page "/artistas/editar/{id:int}"
+@inject NavigationManager _navigationManager
+@inject IRepositorioArtistas _repositorioArtista
+@rendermode InteractiveServer
+
+<PageTitle>Artistas</PageTitle>
+<h3>@_mensaje Artista</h3>
+
+<EditForm Model="_artista" FormName="frmArtista" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label for="txtNombre" class="form-label">Nombre</label>
+        <InputText @bind-Value="_artista.Nombre" class="form-control" id="txtNombre" />
+        <ValidationMessage For="() =>_artista.Nombre" />
+    </div>
+    <div class="mb-3">
+        <label for="txtNacionalidad" class="form-label">Nacionalidad</label>
+        <InputText @bind-Value="_artista.Nacionalidad" class="form-control" id="txtNacionalidad" />
+        <ValidationMessage For="() =>_artista.Nacionalidad" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <button class="btn btn-secondary ms-2" @onclick="Cancelar">Cancelar</button>
+</EditForm>
+
+
+@code {
+
+    [Parameter]
+    public int id { get; set; }
+    private Artista _artista = new();
+    private string _mensaje = "Nueva";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (id > 0)
+        {
+            _mensaje = "Modificar ";
+            _artista = await _repositorioArtista.Get(id);
+        }
+    }
+
+    private void Cancelar()
+    {
+        _navigationManager.NavigateTo("/artistas");
+    }
+    private async Task Guardar()
+    {
+        if (id > 0)
+        {
+            _artista.Id = id;
+            await _repositorioArtista.Update(_artista);
+        }
+        else
+        {
+            await _repositorioArtista.Add(_artista);
+        }
+        Cancelar();
+    }
+
+}

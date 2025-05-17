@@ -1,0 +1,78 @@
+﻿@page "/canciones/nueva"
+@page "/canciones/editar/{id:int}"
+@inject NavigationManager _navigationManager
+@inject IRepositorioCanciones _repositorioCancion
+@inject IRepositorioAlbums _repositorioAlbum
+@rendermode InteractiveServer
+
+<PageTitle>Canciones</PageTitle>
+<h3>@_mensaje Cancion</h3>
+
+<EditForm Model="_cancion" FormName="frmCancion" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label for="txtTitulo" class="form-label">Titulo</label>
+        <InputText @bind-Value="_cancion.Titulo" class="form-control" id="txtTitulo" />
+        <ValidationMessage For="() =>_cancion.Titulo" />
+    </div>
+    <div class="mb-3">
+        <label for="txtDuracion" class="form-label">Duracion</label>
+        <InputText @bind-Value="_cancion.Duracion" class="form-control" id="txtDuracion" />
+        <ValidationMessage For="() =>_cancion.Duracion" />
+    </div>
+        <div class="mb-3 row">
+        <label for="txtAlbum" class="col-sm-2 col-form-label">Album</label>
+        <div class="col-sm-10">
+            <InputSelect class="form-select" id="txtAlbum" @bind-Value="_cancion.AlbumId">
+                <option value="">Seleccione...</option>
+                @foreach (var album in _albumes)
+                {
+                    <option value="@album.Id">@album.Titulo</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="()=>_cancion.AlbumId" />
+        </div>
+</div>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <button class="btn btn-secondary ms-2" @onclick="Cancelar">Cancelar</button>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+    private Cancion _cancion = new();
+    private string _mensaje = "Nueva";
+    private List<Album> _albumes = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _albumes = await _repositorioAlbum.GetAll();
+        if (id > 0)
+        {
+            _mensaje = "Modificar ";
+            _cancion = await _repositorioCancion.Get(id);
+        }
+    }
+
+    private void Cancelar()
+    {
+        _navigationManager.NavigateTo("/canciones");
+    }
+    private async Task Guardar()
+    {
+        if (id > 0)
+        {
+            _cancion.Id = id;
+            await _repositorioCancion.Update(_cancion);
+        }
+        else
+        {
+            await _repositorioCancion.Add(_cancion);
+        }
+        Cancelar();
+    }
+
+}

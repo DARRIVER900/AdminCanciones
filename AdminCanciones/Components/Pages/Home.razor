@@ -1,0 +1,78 @@
+﻿@page "/"
+@inject IRepositorioCanciones _repositorioCancion
+
+<h1>Listado de Canciones</h1>
+<br />
+<br />
+<br />
+<h6>Bienvenido a esta practica plataforma en la que podras puedan registrar, listar, editar y eliminar canciones,
+    clasificadas por artistas y álbumes. Ademas, esta plataforma permite generar reportes simples como: canciones por artista,
+    canciones por álbum, y listado general. </h6>
+<br />
+<br />
+<br />
+
+<div class="container mb-4">
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <img src="1.jpg" class="img-fluid rounded w-75 mx-auto d-block" alt="imagen1">
+        </div>
+        <div class="col-md-6">
+            <img src="2.jpg" class="img-fluid rounded w-75 mx-auto d-block" alt="Imagen2">
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <img src="3.jpg" class="img-fluid rounded w-75 h-75 mx-auto d-block" alt="Imagen3">
+        </div>
+        <div class="col-md-6">
+            <img src="4.jpg" class="img-fluid rounded w-75 mx-auto d-block" alt="Imagen3">
+        </div>
+    </div>
+
+</div>
+
+@if (_canciones == null)
+{
+    <p><em>Cargando canciones...</em></p>
+}
+else if (_canciones.Count == 0)
+{
+    <h3>No hay canciones disponibles.</h3>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Álbum</th>
+                <th>Artista</th>
+                <th>Duración</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cancion in _canciones)
+            {
+                <tr>
+                    <td>@cancion.Titulo</td>
+                    <td>@cancion.Album?.Titulo</td>
+                    <td>@cancion.Album?.Artista?.Nombre</td>
+                    <td>@cancion.Duracion</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Cancion>? _canciones;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _canciones = await _repositorioCancion.GetAll();
+    }
+}
+
