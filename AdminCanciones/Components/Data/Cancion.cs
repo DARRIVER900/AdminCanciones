@@ -16,5 +16,6 @@ namespace AdminCanciones.Components.Data
 
         public int AlbumId { get; set; }
         virtual public Album? Album { get; set; }
+        public ICollection<Playlist>? Playlists { get; set; }
     }
 }

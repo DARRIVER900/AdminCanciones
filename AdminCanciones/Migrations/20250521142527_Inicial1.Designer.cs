@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdminCanciones.Migrations
 {
     [DbContext(typeof(BasedeDatosDbContext))]
-    [Migration("20250515234607_AA2")]
-    partial class AA2
+    [Migration("20250521142527_Inicial1")]
+    partial class Inicial1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -103,6 +103,44 @@ namespace AdminCanciones.Migrations
                     b.ToTable("Canciones");
                 });
 
+            modelBuilder.Entity("AdminCanciones.Components.Data.Playlist", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Descripciom")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Playlists");
+                });
+
+            modelBuilder.Entity("CancionPlaylist", b =>
+                {
+                    b.Property<int>("CancionesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PlaylistsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CancionesId", "PlaylistsId");
+
+                    b.HasIndex("PlaylistsId");
+
+                    b.ToTable("CancionPlaylist");
+                });
+
             modelBuilder.Entity("AdminCanciones.Components.Data.Album", b =>
                 {
                     b.HasOne("AdminCanciones.Components.Data.Artista", "Artista")
@@ -123,6 +161,21 @@ namespace AdminCanciones.Migrations
                         .IsRequired();
 
                     b.Navigation("Album");
+                });
+
+            modelBuilder.Entity("CancionPlaylist", b =>
+                {
+                    b.HasOne("AdminCanciones.Components.Data.Cancion", null)
+                        .WithMany()
+                        .HasForeignKey("CancionesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AdminCanciones.Components.Data.Playlist", null)
+                        .WithMany()
+                        .HasForeignKey("PlaylistsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("AdminCanciones.Components.Data.Album", b =>

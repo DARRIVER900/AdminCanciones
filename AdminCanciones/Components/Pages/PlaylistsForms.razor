@@ -1,0 +1,56 @@
+﻿@page "/playlists/nueva"
+@page "/playlists/editar/{id:int}"
+@inject NavigationManager _navigationManager
+@inject IRepositorioPlaylists _repositorioPlaylist
+@rendermode InteractiveServer
+<PageTitle>Playlists</PageTitle>
+<h3>@_mensaje Playlist</h3>
+
+<EditForm Model="_playlist" FormName="frmPlaylist" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="mb-3 row">
+        <label for="txtNombre" class="col-sm-2 col-form-label">Nombre</label>
+        <div class="col-sm-10">
+            <InputText class="form-control" id="txtNombre" @bind-Value="_playlist.Nombre" />
+            <ValidationMessage For="()=>_playlist.Nombre" />
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <button type="button" class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+    private Playlist _playlist = new();
+    private string _mensaje = "Nuevo ";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (id > 0)
+        {
+            _mensaje = "Modificar";
+            _playlist = await _repositorioPlaylist.Get(id);
+        }
+    }
+
+    private void Cancelar()
+    {
+        _navigationManager.NavigateTo("/playlist");
+    }
+
+    private async Task Guardar()
+    {
+        if (id > 0)
+        {
+            _playlist.Id = id;
+            await _repositorioPlaylist.Update(_playlist);
+        }
+        else
+        {
+            await _repositorioPlaylist.Add(_playlist);
+        }
+        Cancelar();
+    }
+}

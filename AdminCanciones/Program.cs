@@ -20,6 +20,7 @@ internal class Program
         builder.Services.AddScoped<IRepositorioCanciones, RepositorioCancion>();
         builder.Services.AddScoped<IRepositorioArtistas, RepositorioArtista>();
         builder.Services.AddScoped<IRepositorioAlbums, RepositorioAlbum>();
+        builder.Services.AddScoped<IRepositorioPlaylists, RepositorioPlaylist>();
 
         var app = builder.Build();
 

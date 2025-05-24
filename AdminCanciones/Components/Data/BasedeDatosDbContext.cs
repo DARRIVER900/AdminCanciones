@@ -13,5 +13,6 @@ namespace AdminCanciones.Components.Data
         public DbSet<Cancion> Canciones { get; set; }
         public DbSet<Album> Albumes { get; set; }
         public DbSet<Artista> Artistas { get; set; }
+        public DbSet<Playlist> Playlists { get; set; }
     }
 }
