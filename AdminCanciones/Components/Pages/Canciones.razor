@@ -37,10 +37,6 @@ else
                     <td>@cancion.Titulo</td>
                     <td>@cancion.Duracion</td>
                     <td>@cancion.Album!.Titulo</td>
-                    @foreach (var playlist in cancion.Playlists)
-                    {
-                        <span class="badge bg-secondary ms-1">@playlist.Nombre</span>
-                    }
                     <td>
                         <button class="btn btn-outline-danger" @onclick="()=>Eliminar(cancion)" title="Eliminar">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" class="bi bi-trash-fill" viewBox="0 0 16 16">

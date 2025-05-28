@@ -32,7 +32,6 @@ namespace AdminCanciones.Repositorio
             return await _dbContext.Canciones
                 .Include(c => c.Album)
                     .ThenInclude(a => a.Artista)
-                    .Include(c => c.Playlists)
                 .AsNoTracking()
                 .ToListAsync();
         }

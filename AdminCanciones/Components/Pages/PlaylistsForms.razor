@@ -2,6 +2,7 @@
 @page "/playlists/editar/{id:int}"
 @inject NavigationManager _navigationManager
 @inject IRepositorioPlaylists _repositorioPlaylist
+@inject IRepositorioCanciones _repositorioCancion
 @rendermode InteractiveServer
 <PageTitle>Playlists</PageTitle>
 <h3>@_mensaje Playlist</h3>
@@ -15,6 +16,29 @@
             <ValidationMessage For="()=>_playlist.Nombre" />
         </div>
     </div>
+    <div class="mb-3 row">
+        <label for="txtDescripcion" class="col-sm-2 col-form-label">Descripción</label>
+        <div class="col-sm-10">
+            <InputText class="form-control" id="txtDescripcion" @bind-Value="_playlist.Descripcion" />
+            <ValidationMessage For="()=>_playlist.Descripcion" />
+        </div>
+    </div>
+
+    <div class="mb-3 row">
+        <label for="txtCanciones" class="col-sm-2 col-form-label">Canciones</label>
+        <div class="col-sm-10">
+            <select multiple class="form-select" id="txtCanciones" @onchange="OnCancionesSeleccionadas">
+                @foreach (var cancion in _canciones)
+                {
+                    <option value="@cancion.Id" selected="@_cancionesIdSeleccionadas.Contains(cancion.Id)">
+                        @cancion.Titulo
+                    </option>
+                }
+            </select>
+            <ValidationMessage For="()=>_playlist.Canciones" />
+        </div>
+    </div>
+
     <button type="submit" class="btn btn-primary">Guardar</button>
     <button type="button" class="btn btn-danger" @onclick="Cancelar">Cancelar</button>
 </EditForm>
@@ -24,24 +48,42 @@
     [Parameter]
     public int id { get; set; }
     private Playlist _playlist = new();
+    private List<Cancion> _canciones = new();
+    private List<int> _cancionesIdSeleccionadas = new();
     private string _mensaje = "Nuevo ";
 
     protected override async Task OnInitializedAsync()
     {
+        _canciones = await _repositorioCancion.GetAll();
         if (id > 0)
         {
             _mensaje = "Modificar";
             _playlist = await _repositorioPlaylist.Get(id);
+
+            if (_playlist.Canciones != null && _playlist.Canciones.Count > 0)
+            {
+                _cancionesIdSeleccionadas = _playlist.Canciones.Select(c => c.Id).ToList();
+            }
         }
     }
 
     private void Cancelar()
     {
-        _navigationManager.NavigateTo("/playlist");
+        _navigationManager.NavigateTo("/playlists");
     }
 
     private async Task Guardar()
     {
+        if (_cancionesIdSeleccionadas.Count > 0)
+        {
+            _playlist.Canciones = new List<Cancion>();
+            foreach (var id in _cancionesIdSeleccionadas)
+            {
+                var cancion = await _repositorioCancion.Get(id);
+                _playlist.Canciones.Add(cancion);
+            }
+        }
+
         if (id > 0)
         {
             _playlist.Id = id;
@@ -52,5 +94,14 @@
             await _repositorioPlaylist.Add(_playlist);
         }
         Cancelar();
+    }
+
+    private void OnCancionesSeleccionadas(ChangeEventArgs e)
+    {
+        var selectedOptions = (e.Value as IEnumerable<string>) ?? new[] { e.Value?.ToString() };
+        _cancionesIdSeleccionadas = selectedOptions
+            .Where(id => int.TryParse(id, out _))
+            .Select(int.Parse)
+            .ToList();
     }
 }

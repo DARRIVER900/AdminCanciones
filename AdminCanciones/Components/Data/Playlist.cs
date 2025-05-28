@@ -13,7 +13,7 @@ namespace AdminCanciones.Components.Data
 
         [Required(ErrorMessage = "La descripcion es obligatoria")]
         [StringLength(100, ErrorMessage = "La descripcion no puede exceder los 100 caracteres")]
-        public string? Descripciom { get; set; }
+        public string? Descripcion { get; set; }
 
         public ICollection<Cancion>? Canciones { get; set; }
     }

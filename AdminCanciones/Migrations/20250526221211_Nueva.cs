@@ -5,7 +5,7 @@
 namespace AdminCanciones.Migrations
 {
     /// <inheritdoc />
-    public partial class Inicial1 : Migration
+    public partial class Nueva : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,7 +31,7 @@ namespace AdminCanciones.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Descripciom = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    Descripcion = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -77,7 +77,7 @@ namespace AdminCanciones.Migrations
                         column: x => x.AlbumId,
                         principalTable: "Albumes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
